@@ -21,6 +21,8 @@ ini_set('display_errors', 1);
     <input type="submit" name="submit" value="Submit">
 </form>
 
+<hr>
+
 <?php
 
 class Person {
@@ -36,7 +38,6 @@ class Person {
         $this->setContact($contact);
     }
 
-    
     protected function setId($id) {
         $this->id = trim($id);
     }
@@ -53,28 +54,15 @@ class Person {
         $this->contact = trim($contact);
     }
 
-  
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getName() {
-        return $this->name;
-    }
-
-    public function getAddress() {
-        return $this->address;
-    }
-
-    public function getContact() {
-        return $this->contact;
-    }
+    public function getId() { return $this->id; }
+    public function getName() { return $this->name; }
+    public function getAddress() { return $this->address; }
+    public function getContact() { return $this->contact; }
 }
 
 
 class User extends Person {
-
-    private $role = "User"; 
+    private $role = "User";
 
     public function getRole() {
         return $this->role;
@@ -82,9 +70,7 @@ class User extends Person {
 }
 
 
-
 class FileManager {
-
     public function save(User $user) {
 
         $data  = "ID: " . $user->getId() . "\n";
@@ -96,12 +82,19 @@ class FileManager {
 
         file_put_contents("users.txt", $data, FILE_APPEND);
     }
+
+   
+    public function read() {
+        if (file_exists("users.txt")) {
+            return nl2br(file_get_contents("users.txt"));
+        } else {
+            return "No data found!";
+        }
+    }
 }
 
 
-
 class DisplayManager {
-
     public function show(User $user) {
         echo "<h3>Submitted Data:</h3>";
         echo "ID: " . $user->getId() . "<br>";
@@ -126,6 +119,7 @@ class UserCounter {
 }
 
 
+$file = new FileManager();
 
 if (isset($_POST['submit'])) {
 
@@ -138,7 +132,6 @@ if (isset($_POST['submit'])) {
 
     UserCounter::increase();
 
-    $file = new FileManager();
     $file->save($user);
 
     $display = new DisplayManager();
@@ -146,6 +139,10 @@ if (isset($_POST['submit'])) {
 
     echo "<br><b>Total Users: " . UserCounter::getCount() . "</b>";
 }
+
+echo "<hr>";
+echo "<h3>All Saved Users (From TXT File):</h3>";
+echo $file->read();
 
 ?>
 
