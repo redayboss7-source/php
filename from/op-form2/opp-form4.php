@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced OOP Form</title>
+    <title>Advanced OOP Form with Inheritance</title>
 </head>
 <body>
 
@@ -23,12 +23,11 @@ ini_set('display_errors', 1);
 
 <?php
 
-
-class User {
-    private $id;
-    private $name;
-    private $address;
-    private $contact;
+class Person {
+    protected $id;
+    protected $name;
+    protected $address;
+    protected $contact;
 
     public function __construct($id, $name, $address, $contact) {
         $this->setId($id);
@@ -37,24 +36,24 @@ class User {
         $this->setContact($contact);
     }
 
-
-    public function setId($id) {
+    
+    protected function setId($id) {
         $this->id = trim($id);
     }
 
-    public function setName($name) {
+    protected function setName($name) {
         $this->name = trim($name);
     }
 
-    public function setAddress($address) {
+    protected function setAddress($address) {
         $this->address = trim($address);
     }
 
-    public function setContact($contact) {
+    protected function setContact($contact) {
         $this->contact = trim($contact);
     }
 
- 
+  
     public function getId() {
         return $this->id;
     }
@@ -72,18 +71,33 @@ class User {
     }
 }
 
+
+class User extends Person {
+
+    private $role = "User"; 
+
+    public function getRole() {
+        return $this->role;
+    }
+}
+
+
+
 class FileManager {
 
     public function save(User $user) {
+
         $data  = "ID: " . $user->getId() . "\n";
         $data .= "Name: " . $user->getName() . "\n";
         $data .= "Address: " . $user->getAddress() . "\n";
         $data .= "Contact: " . $user->getContact() . "\n";
+        $data .= "Role: " . $user->getRole() . "\n";
         $data .= "----------------------\n";
 
         file_put_contents("users.txt", $data, FILE_APPEND);
     }
 }
+
 
 
 class DisplayManager {
@@ -94,8 +108,10 @@ class DisplayManager {
         echo "Name: " . $user->getName() . "<br>";
         echo "Address: " . $user->getAddress() . "<br>";
         echo "Contact: " . $user->getContact() . "<br>";
+        echo "Role: " . $user->getRole() . "<br>";
     }
 }
+
 
 class UserCounter {
     private static $count = 0;
@@ -120,7 +136,6 @@ if (isset($_POST['submit'])) {
 
     $user = new User($id, $name, $address, $contact);
 
-    
     UserCounter::increase();
 
     $file = new FileManager();
