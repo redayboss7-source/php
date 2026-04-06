@@ -23,7 +23,7 @@ ini_set('display_errors', 1);
 
 <?php
 
-// 🔹 Class 1: User
+
 class User {
     private $id;
     private $name;
@@ -37,7 +37,7 @@ class User {
         $this->setContact($contact);
     }
 
-    // 🔸 Setters
+
     public function setId($id) {
         $this->id = trim($id);
     }
@@ -54,7 +54,7 @@ class User {
         $this->contact = trim($contact);
     }
 
-    // 🔸 Getters
+ 
     public function getId() {
         return $this->id;
     }
@@ -72,7 +72,6 @@ class User {
     }
 }
 
-// 🔹 Class 2: FileManager
 class FileManager {
 
     public function save(User $user) {
@@ -86,7 +85,7 @@ class FileManager {
     }
 }
 
-// 🔹 Class 3: DisplayManager
+
 class DisplayManager {
 
     public function show(User $user) {
@@ -98,7 +97,6 @@ class DisplayManager {
     }
 }
 
-// 🔹 Class 4: UserCounter (Static Example)
 class UserCounter {
     private static $count = 0;
 
@@ -112,7 +110,7 @@ class UserCounter {
 }
 
 
-// 🔥 Main Logic
+
 if (isset($_POST['submit'])) {
 
     $id = htmlspecialchars($_POST['id']);
@@ -120,17 +118,14 @@ if (isset($_POST['submit'])) {
     $address = htmlspecialchars($_POST['address']);
     $contact = htmlspecialchars($_POST['contact']);
 
-    // Create object
     $user = new User($id, $name, $address, $contact);
 
-    // Increase count
+    
     UserCounter::increase();
 
-    // Save to file
     $file = new FileManager();
     $file->save($user);
 
-    // Display data
     $display = new DisplayManager();
     $display->show($user);
 
