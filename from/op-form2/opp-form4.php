@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced OOP Form with Inheritance</title>
+    <title>Advanced OOP Form without Role</title>
 </head>
 <body>
 
@@ -62,11 +62,7 @@ class Person {
 
 
 class User extends Person {
-    private $role = "User";
-
-    public function getRole() {
-        return $this->role;
-    }
+  
 }
 
 
@@ -77,13 +73,11 @@ class FileManager {
         $data .= "Name: " . $user->getName() . "\n";
         $data .= "Address: " . $user->getAddress() . "\n";
         $data .= "Contact: " . $user->getContact() . "\n";
-        $data .= "Role: " . $user->getRole() . "\n";
         $data .= "----------------------\n";
 
         file_put_contents("users.txt", $data, FILE_APPEND);
     }
 
-   
     public function read() {
         if (file_exists("users.txt")) {
             return nl2br(file_get_contents("users.txt"));
@@ -101,20 +95,6 @@ class DisplayManager {
         echo "Name: " . $user->getName() . "<br>";
         echo "Address: " . $user->getAddress() . "<br>";
         echo "Contact: " . $user->getContact() . "<br>";
-        echo "Role: " . $user->getRole() . "<br>";
-    }
-}
-
-
-class UserCounter {
-    private static $count = 0;
-
-    public static function increase() {
-        self::$count++;
-    }
-
-    public static function getCount() {
-        return self::$count;
     }
 }
 
@@ -128,16 +108,17 @@ if (isset($_POST['submit'])) {
     $address = htmlspecialchars($_POST['address']);
     $contact = htmlspecialchars($_POST['contact']);
 
-    $user = new User($id, $name, $address, $contact);
+    if (empty($id) || empty($name) || empty($address) || empty($contact)) {
+        echo "<b style='color:red;'>All fields are required!</b>";
+        return;
+    }
 
-    UserCounter::increase();
+    $user = new User($id, $name, $address, $contact);
 
     $file->save($user);
 
     $display = new DisplayManager();
     $display->show($user);
-
-    echo "<br><b>Total Users: " . UserCounter::getCount() . "</b>";
 }
 
 echo "<hr>";
