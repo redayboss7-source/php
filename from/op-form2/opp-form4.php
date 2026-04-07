@@ -8,7 +8,7 @@ session_start();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced OOP Form Fixed</title>
+    <title>Advanced OOP Form with Static</title>
 </head>
 <body>
 
@@ -46,45 +46,33 @@ class Person {
 class User extends Person {}
 
 class FileManager {
-    private $file = "users.txt";
+    private static $file = "users.txt";
 
-    public function save(User $user) {
+    public static function save(User $user) {
         $data  = "ID: {$user->getId()}\n";
         $data .= "Name: {$user->getName()}\n";
         $data .= "Address: {$user->getAddress()}\n";
         $data .= "Contact: {$user->getContact()}\n";
         $data .= "----------------------\n";
 
-        file_put_contents($this->file, $data, FILE_APPEND);
+        file_put_contents(self::$file, $data, FILE_APPEND);
     }
 
-    public function read() {
-        if (file_exists($this->file)) {
-            return nl2br(file_get_contents($this->file));
+    public static function read() {
+        if (file_exists(self::$file)) {
+            return nl2br(file_get_contents(self::$file));
         }
         return "No data found!";
     }
 
-    public function countUsers() {
-        if (file_exists($this->file)) {
-            $content = file_get_contents($this->file);
+    public static function countUsers() {
+        if (file_exists(self::$file)) {
+            $content = file_get_contents(self::$file);
             return substr_count($content, "ID:");
         }
         return 0;
     }
 }
-
-class DisplayManager {
-    public function show(User $user) {
-        echo "<h3>Submitted Data:</h3>";
-        echo "ID: {$user->getId()}<br>";
-        echo "Name: {$user->getName()}<br>";
-        echo "Address: {$user->getAddress()}<br>";
-        echo "Contact: {$user->getContact()}<br>";
-    }
-}
-
-$file = new FileManager();
 
 if (isset($_POST['submit'])) {
 
@@ -99,7 +87,7 @@ if (isset($_POST['submit'])) {
 
         $user = new User($id, $name, $address, $contact);
 
-        $file->save($user);
+        FileManager::save($user);
 
         $_SESSION['success'] = "Data saved successfully!";
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -112,13 +100,12 @@ if (isset($_SESSION['success'])) {
     unset($_SESSION['success']);
 }
 
-echo "<br><b>Total Users: " . $file->countUsers() . "</b>";
+echo "<br><b>Total Users: " . FileManager::countUsers() . "</b>";
 
 echo "<hr>";
 echo "<h3>All Saved Users:</h3>";
-echo $file->read();
+echo FileManager::read();
 
 ?>
-
 </body>
 </html>
