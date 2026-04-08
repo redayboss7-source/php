@@ -1,19 +1,18 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-?>
+?> 
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OOP Form</title>
+    <title>Advanced OOP Form with Inheritance</title>
 </head>
 <body>
 
 <h2>User Information Form</h2>
 
 <form method="POST">
-    
     ID: <input type="text" name="id" required><br><br>
     Name: <input type="text" name="name" required><br><br>
     Address: <input type="text" name="address" required><br><br>
@@ -22,84 +21,128 @@ ini_set('display_errors', 1);
     <input type="submit" name="submit" value="Submit">
 </form>
 
+<hr>
+
 <?php
 
-class User {
-    private $name;
-    private $id;
-    private $address;
-    private $contact;
+class Person {
+    protected $id;
+    protected $name;
+    protected $address;
+    protected $contact;
 
-    public function __construct($name, $id, $address, $contact) {
-        $this->setName($name);
+    public function __construct($id, $name, $address, $contact) {
         $this->setId($id);
+        $this->setName($name);
         $this->setAddress($address);
         $this->setContact($contact);
     }
 
-    public function setName($name) {
-        $this->name = trim($name);
-    }
-
-    public function setId($id) {
+    protected function setId($id) {
         $this->id = trim($id);
     }
 
-    public function setAddress($address) {
+    protected function setName($name) {
+        $this->name = trim($name);
+    }
+
+    protected function setAddress($address) {
         $this->address = trim($address);
     }
 
-    public function setContact($contact) {
+    protected function setContact($contact) {
         $this->contact = trim($contact);
     }
 
-    public function getName() {
-        return $this->name;
-    }
+    public function getId() { return $this->id; }
+    public function getName() { return $this->name; }
+    public function getAddress() { return $this->address; }
+    public function getContact() { return $this->contact; }
+}
 
-    public function getId() {
-        return $this->id;
-    }
 
-    public function getAddress() {
-        return $this->address;
-    }
+class User extends Person {
+    private $role = "User";
 
-    public function getContact() {
-        return $this->contact;
+    public function getRole() {
+        return $this->role;
     }
+}
 
-    public function display() {
-        echo "<h3>Submitted Data:</h3>";
-        echo "ID: " . $this->getId() . "<br>";
-        echo "Name: " . $this->getName() . "<br>";
-        echo "Address: " . $this->getAddress() . "<br>";
-        echo "Contact: " . $this->getContact() . "<br>";
-    }
 
-    public function saveToFile() {
-        $data = "Name: " . $this->getName() . "\n" .
-                "ID: " . $this->getId() . "\n" .
-                "Address: " . $this->getAddress() . "\n" .
-                "Contact: " . $this->getContact() . "\n";
-        $data .= "--------------------------\n";
+class FileManager {
+    public function save(User $user) {
+
+        $data  = "ID: " . $user->getId() . "\n";
+        $data .= "Name: " . $user->getName() . "\n";
+        $data .= "Address: " . $user->getAddress() . "\n";
+        $data .= "Contact: " . $user->getContact() . "\n";
+        $data .= "Role: " . $user->getRole() . "\n";
+        $data .= "----------------------\n";
 
         file_put_contents("users.txt", $data, FILE_APPEND);
     }
+
+   
+    public function read() {
+        if (file_exists("users.txt")) {
+            return nl2br(file_get_contents("users.txt"));
+        } else {
+            return "No data found!";
+        }
+    }
 }
+
+
+class DisplayManager {
+    public function show(User $user) {
+        echo "<h3>Submitted Data:</h3>";
+        echo "ID: " . $user->getId() . "<br>";
+        echo "Name: " . $user->getName() . "<br>";
+        echo "Address: " . $user->getAddress() . "<br>";
+        echo "Contact: " . $user->getContact() . "<br>";
+        echo "Role: " . $user->getRole() . "<br>";
+    }
+}
+
+
+class UserCounter {
+    private static $count = 0;
+
+    public static function increase() {
+        self::$count++;
+    }
+
+    public static function getCount() {
+        return self::$count;
+    }
+}
+
+
+$file = new FileManager();
 
 if (isset($_POST['submit'])) {
 
-    $name = htmlspecialchars($_POST['name']);
     $id = htmlspecialchars($_POST['id']);
+    $name = htmlspecialchars($_POST['name']);
     $address = htmlspecialchars($_POST['address']);
     $contact = htmlspecialchars($_POST['contact']);
 
-    $user = new User($name, $id, $address, $contact);
+    $user = new User($id, $name, $address, $contact);
 
-    $user->saveToFile();
-    $user->display();
+    UserCounter::increase();
+
+    $file->save($user);
+
+    $display = new DisplayManager();
+    $display->show($user);
+
+    echo "<br><b>Total Users: " . UserCounter::getCount() . "</b>";
 }
+
+echo "<hr>";
+echo "<h3>All Saved Users (From TXT File):</h3>";
+echo $file->read();
 
 ?>
 
