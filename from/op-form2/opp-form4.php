@@ -8,7 +8,7 @@ session_start();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced OOP Form with Static</title>
+    <title> OOP Form by Ridoy </title>
 </head>
 <body>
 
