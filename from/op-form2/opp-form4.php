@@ -1,12 +1,14 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+session_start();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced OOP Form without Role</title>
+    <title>Advanced OOP Form with Static</title>
 </head>
 <body>
 
@@ -26,31 +28,12 @@ ini_set('display_errors', 1);
 <?php
 
 class Person {
-    protected $id;
-    protected $name;
-    protected $address;
-    protected $contact;
+    protected $id, $name, $address, $contact;
 
     public function __construct($id, $name, $address, $contact) {
-        $this->setId($id);
-        $this->setName($name);
-        $this->setAddress($address);
-        $this->setContact($contact);
-    }
-
-    protected function setId($id) {
         $this->id = trim($id);
-    }
-
-    protected function setName($name) {
         $this->name = trim($name);
-    }
-
-    protected function setAddress($address) {
         $this->address = trim($address);
-    }
-
-    protected function setContact($contact) {
         $this->contact = trim($contact);
     }
 
@@ -60,46 +43,36 @@ class Person {
     public function getContact() { return $this->contact; }
 }
 
-
-class User extends Person {
-  
-}
-
+class User extends Person {}
 
 class FileManager {
-    public function save(User $user) {
+    private static $file = "users.txt";
 
-        $data  = "ID: " . $user->getId() . "\n";
-        $data .= "Name: " . $user->getName() . "\n";
-        $data .= "Address: " . $user->getAddress() . "\n";
-        $data .= "Contact: " . $user->getContact() . "\n";
+    public static function save(User $user) {
+        $data  = "ID: {$user->getId()}\n";
+        $data .= "Name: {$user->getName()}\n";
+        $data .= "Address: {$user->getAddress()}\n";
+        $data .= "Contact: {$user->getContact()}\n";
         $data .= "----------------------\n";
 
-        file_put_contents("users.txt", $data, FILE_APPEND);
+        file_put_contents(self::$file, $data, FILE_APPEND);
     }
 
-    public function read() {
-        if (file_exists("users.txt")) {
-            return nl2br(file_get_contents("users.txt"));
-        } else {
-            return "No data found!";
+    public static function read() {
+        if (file_exists(self::$file)) {
+            return nl2br(file_get_contents(self::$file));
         }
+        return "No data found!";
+    }
+
+    public static function countUsers() {
+        if (file_exists(self::$file)) {
+            $content = file_get_contents(self::$file);
+            return substr_count($content, "ID:");
+        }
+        return 0;
     }
 }
-
-
-class DisplayManager {
-    public function show(User $user) {
-        echo "<h3>Submitted Data:</h3>";
-        echo "ID: " . $user->getId() . "<br>";
-        echo "Name: " . $user->getName() . "<br>";
-        echo "Address: " . $user->getAddress() . "<br>";
-        echo "Contact: " . $user->getContact() . "<br>";
-    }
-}
-
-
-$file = new FileManager();
 
 if (isset($_POST['submit'])) {
 
@@ -110,22 +83,29 @@ if (isset($_POST['submit'])) {
 
     if (empty($id) || empty($name) || empty($address) || empty($contact)) {
         echo "<b style='color:red;'>All fields are required!</b>";
-        return;
+    } else {
+
+        $user = new User($id, $name, $address, $contact);
+
+        FileManager::save($user);
+
+        $_SESSION['success'] = "Data saved successfully!";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
-
-    $user = new User($id, $name, $address, $contact);
-
-    $file->save($user);
-
-    $display = new DisplayManager();
-    $display->show($user);
 }
 
+if (isset($_SESSION['success'])) {
+    echo "<b style='color:green;'>" . $_SESSION['success'] . "</b><br>";
+    unset($_SESSION['success']);
+}
+
+echo "<br><b>Total Users: " . FileManager::countUsers() . "</b>";
+
 echo "<hr>";
-echo "<h3>All Saved Users (From TXT File):</h3>";
-echo $file->read();
+echo "<h3>All Saved Users:</h3>";
+echo FileManager::read();
 
 ?>
-
 </body>
 </html>
