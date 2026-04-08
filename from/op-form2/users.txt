@@ -178,3 +178,8 @@ Address: hatirjil
 Contact: 02546512152
 -----------------
 >>>>>>> 5e775b4f5f79525954bfcc4b543344542dd1cb4d
+ID: 5525777
+Name: ridoy
+Address: danmondi
+Contact: 01618049034
+----------------------

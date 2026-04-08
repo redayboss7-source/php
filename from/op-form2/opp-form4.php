@@ -11,12 +11,12 @@ session_start();
 
     <title> OOP Form by Ridoy </title>
 
-    <title>Advanced OOP Form with Static</title>
+  
 
 </head>
 <body>
 
-<h2>User Information Form</h2>
+<h2>User Information Form By Ridu</h2>
 
 <form method="POST">
     ID: <input type="text" name="id" required><br><br>
