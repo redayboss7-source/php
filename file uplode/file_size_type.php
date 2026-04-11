@@ -17,11 +17,11 @@ if(isset($_POST['submit'])){
    
     $maxSize = 2 * 1024 * 1024;
 
-    echo "<h3>File Info:</h3>";
-    echo "Name: $fileName <br>";
-    echo "Size: $fileSize bytes <br>";
-    echo "Type: $fileType <br>";
-    echo "Extension: $fileExt <br><br>";
+    // echo "<h3>File Info:</h3>";
+    // echo "Name: $fileName <br>";
+    // echo "Size: $fileSize bytes <br>";
+    // echo "Type: $fileType <br>";
+    // echo "Extension: $fileExt <br><br>";
 
     
     if(!in_array($fileExt, $allowed)){
