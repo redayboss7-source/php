@@ -3,19 +3,18 @@ if(isset($_POST['submit'])){
 
     $file = $_FILES['myfile'];
 
-    // 🔸 File information
+
     $fileName = $file['name'];
     $fileTmp = $file['tmp_name'];
     $fileSize = $file['size'];
     $fileType = $file['type'];
 
-    // 🔸 Extension বের করা
     $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-    // 🔸 Allowed types
+  
     $allowed = ['jpg', 'png', 'pdf'];
 
-    // 🔸 Max size (2MB)
+   
     $maxSize = 2 * 1024 * 1024;
 
     echo "<h3>File Info:</h3>";
@@ -24,7 +23,7 @@ if(isset($_POST['submit'])){
     echo "Type: $fileType <br>";
     echo "Extension: $fileExt <br><br>";
 
-    // 🔸 Validation
+    
     if(!in_array($fileExt, $allowed)){
         echo "❌ Invalid file type! শুধু jpg, png, pdf allowed <br>";
     }
@@ -32,10 +31,10 @@ if(isset($_POST['submit'])){
         echo "❌ File too large! Max 2MB <br>";
     }
     else{
-        // 🔸 Upload folder
-        $uploadPath = "uploads/" . $fileName;
+        
+        $uploadPath = "uplodes/" . $fileName;
 
-        // 🔸 File move করা
+        
         if(move_uploaded_file($fileTmp, $uploadPath)){
             echo "✅ File uploaded successfully!";
         } else {
