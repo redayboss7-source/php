@@ -1,0 +1,41 @@
+body {
+    font-family: Arial;
+    background: linear-gradient(120deg,#667eea,#764ba2);
+}
+
+.container {
+    width: 400px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+h2 {
+    text-align: center;
+    color: #5a67d8;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button {
+    background: #5a67d8;
+    color: white;
+    border: none;
+}
+
+.table {
+    width: 90%;
+    margin: 20px auto;
+    background: white;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
