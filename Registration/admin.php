@@ -6,86 +6,196 @@ if(!isset($_SESSION['user'])){
     exit();
 }
 
+/* UPLOAD */
 if(isset($_POST['upload'])){
 
-    $file=$_FILES['file']['name'];
-    $tmp=$_FILES['file']['tmp_name'];
-    $ext=strtolower(pathinfo($file,PATHINFO_EXTENSION));
+    $title = trim($_POST['title']);
+    $desc  = trim($_POST['desc']);
 
-    if(($ext=="jpg" || $ext=="png") && $_FILES['file']['size']<=3*1024*1024){
+    $file = $_FILES['file']['name'];
+    $tmp  = $_FILES['file']['tmp_name'];
+    $size = $_FILES['file']['size'];
 
-        if(!is_dir("uploads")) mkdir("uploads");
+    $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-        $newName=time().rand(1000,9999).".".$ext;
+    $allowed = ['jpg','jpeg','png','pdf','doc','docx'];
+
+    if(!in_array($ext,$allowed)){
+        $error = "Only JPG, PNG, PDF, DOC allowed!";
+    }
+    elseif($size > 3*1024*1024){
+        $error = "Max file size 3MB!";
+    }
+    else{
+
+        if(!is_dir("uploads")){
+            mkdir("uploads");
+        }
+
+        $newName = uniqid().".".$ext;
 
         move_uploaded_file($tmp,"uploads/".$newName);
 
-        $msg="Uploaded!";
-    }else{
-        $msg="Invalid file!";
+        // save title + desc
+        $data = "$newName,$title,$desc\n";
+        file_put_contents("fileinfo.txt",$data,FILE_APPEND);
+
+        $msg = "File Uploaded!";
     }
 }
 
-if(isset($_GET['del'])){
-    unlink("uploads/".$_GET['del']);
+/* DELETE */
+if(isset($_GET['delete'])){
+    $delFile = $_GET['delete'];
+    $path = "uploads/".$delFile;
+
+    if(file_exists($path)){
+        unlink($path);
+    }
+
+    // remove from fileinfo.txt
+    if(file_exists("fileinfo.txt")){
+        $lines = file("fileinfo.txt");
+        $newData = "";
+
+        foreach($lines as $line){
+            $row = explode(",", $line);
+            if(trim($row[0]) != $delFile){
+                $newData .= $line;
+            }
+        }
+
+        file_put_contents("fileinfo.txt", $newData);
+    }
+
+    $msg = "File Deleted!";
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+<title>Dashboard</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<style>
+body{
+    background: linear-gradient(135deg,#667eea,#764ba2);
+}
+.preview-img{
+    height:180px;
+    object-fit:cover;
+}
+</style>
+
 </head>
 
-<body class="bg-light">
+<body>
 
 <div class="container mt-4">
 
-<div class="d-flex justify-content-between mb-3">
-<h4>Welcome <?php echo $_SESSION['user']; ?></h4>
-<a href="logout.php" class="btn btn-danger btn-sm">Logout</a>
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow mb-4">
+    <h5>Welcome, <?php echo $_SESSION['user']; ?></h5>
+    <a href="logout.php" class="btn btn-danger btn-sm">Logout</a>
 </div>
 
-<div class="card p-3 mb-3">
+<!-- UPLOAD BOX -->
+<div class="card shadow mb-4">
+    <div class="card-body text-center">
 
-<?php if(isset($msg)) echo "<div class='alert alert-info'>$msg</div>"; ?>
+        <h4 class="mb-3">Upload File</h4>
 
-<form method="post" enctype="multipart/form-data">
+        <?php if(isset($msg)) echo "<div class='alert alert-success'>$msg</div>"; ?>
+        <?php if(isset($error)) echo "<div class='alert alert-danger'>$error</div>"; ?>
 
-<input type="file" name="file" class="form-control mb-2" required>
+        <form method="post" enctype="multipart/form-data">
 
-<button class="btn btn-primary" name="upload">Upload</button>
+            <input type="text" name="title" class="form-control mb-2" placeholder="Enter Title">
 
-</form>
+            <textarea name="desc" class="form-control mb-3" placeholder="Enter Description"></textarea>
 
+            <input type="file" name="file" class="form-control mb-3" required>
+
+            <button name="upload" class="btn btn-primary w-100">Upload</button>
+
+        </form>
+
+    </div>
 </div>
+
+<!-- GALLERY -->
+<h4 class="text-white text-center mb-3">📂 File Gallery</h4>
 
 <div class="row">
 
 <?php
-$files=@scandir("uploads");
+$folder = "uploads/";
 
-if($files){
+if(!is_dir($folder)){
+    mkdir($folder);
+}
+
+$files = scandir($folder);
+
 foreach($files as $f){
 
-if($f!="." && $f!=".."){
+    if($f != "." && $f != ".."){
+
+        $ext = strtolower(pathinfo($f, PATHINFO_EXTENSION));
+
+        // get title + desc
+        $title = "";
+        $desc = "";
+
+        if(file_exists("fileinfo.txt")){
+            $lines = file("fileinfo.txt");
+
+            foreach($lines as $line){
+                $row = explode(",", $line);
+
+                if(trim($row[0]) == $f){
+                    $title = $row[1];
+                    $desc  = $row[2];
+                }
+            }
+        }
 ?>
 
-<div class="col-md-3 mb-3">
-<div class="card p-2">
+<div class="col-md-3">
+<div class="card p-3 mb-4 text-center shadow">
 
-<img src="uploads/<?php echo $f; ?>" class="img-fluid">
+<?php
+// image preview only
+if(in_array($ext,['jpg','jpeg','png'])){
+?>
+    <img src="uploads/<?php echo $f; ?>" class="img-fluid preview-img">
+<?php
+}
+?>
 
-<a href="?del=<?php echo $f; ?>" class="btn btn-danger btn-sm mt-2">Delete</a>
+<!-- TITLE -->
+<p class="fw-bold text-primary mt-2"><?php echo $title; ?></p>
+
+<!-- DESCRIPTION -->
+<p class="text-muted"><?php echo $desc; ?></p>
+
+<!-- FILE NAME -->
+<p class="text-dark small"><?php echo $f; ?></p>
+
+<!-- DELETE -->
+<a href="?delete=<?php echo $f; ?>" 
+   class="btn btn-danger btn-sm"
+   onclick="return confirm('Delete this file?')">
+   Delete
+</a>
 
 </div>
 </div>
 
 <?php
-}
-}
+    }
 }
 ?>
 

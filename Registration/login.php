@@ -3,37 +3,40 @@ session_start();
 
 if(isset($_POST['login'])){
 
-    $user=$_POST['username'];
-    $pass=$_POST['password'];
+    $user = trim($_POST['username']);
+    $pass = $_POST['password'];
 
-    $data=file("info.txt");
+    if(empty($user) || empty($pass)){
+        $msg = "All fields required!";
+    }else{
 
-    foreach($data as $line){
+        if(file_exists("info.txt")){
+            $data = file("info.txt");
 
-        $row=explode(",",$line);
+            foreach($data as $line){
 
-        if(count($row) < 5) continue;
+                $row = explode(",",$line);
 
-        $fileUser=trim($row[4]);
-        $filePass=trim($row[3]);
+                if(count($row) < 5) continue;
 
-        if($user==$fileUser && password_verify($pass,$filePass)){
-            $_SESSION['user']=$user;
-            header("location:admin.php");
-            exit();
+                if($user == trim($row[4]) && password_verify($pass, trim($row[3]))){
+                    $_SESSION['user'] = $user;
+                    header("location:admin.php");
+                    exit();
+                }
+            }
         }
-    }
 
-    $msg="Invalid login!";
+        $msg = "Invalid login!";
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>Login</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body class="bg-light">
@@ -50,7 +53,6 @@ if(isset($_POST['login'])){
 <form method="post">
 
 <input class="form-control mb-3" type="text" name="username" placeholder="Username">
-
 <input class="form-control mb-3" type="password" name="password" placeholder="Password">
 
 <button class="btn btn-success w-100" name="login">Login</button>

@@ -1,0 +1,42 @@
+<?php
+$connect= mysqli_connect("localhost","root","","crud");
+
+if(isset($_POST['submit'])){
+    $_n = $_POST['name'];
+    $_c = $_POST['contact'];
+    $query = "INSERT INTO users(name,contact) VALUES ('$_n','$_c')";
+    
+    if((mysqli_query($connect,$query)) ){
+    echo "success";
+}}
+
+
+
+
+?>
+
+
+
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  </head>
+  <body>
+    
+    <form method="post">
+    name: <br>
+    <input type="text" name="name"> <br> <br>
+    contact: <br>
+    <input type="text" name="contact">
+    <input type="submit" name="submit" value="submit">
+
+</form>
+<a href="view.php"><button type="button" class="btn btn-primary">view</button></a>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  </body>
+</html>

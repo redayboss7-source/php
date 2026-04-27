@@ -1,3 +1,4 @@
 1,Rakibul Islam,rakib@gmail.com,Rakib1234,Mirpur,01918429431,rakib
 1295443,md shamim hoosain ridoy,redayboss7@gmail.com,0131947,dhanmondi,01319478114,ridu
 1295443,ridoy,redayboss7@gmail.com,$2y$10$96lbrhL1vmDS4U.6g6W3y.HynPgt3eMWVc350jJ1Hid/yc1sK04Du,ridu
+1295443,md shamim hossain ridoy,redayboss7@gmail.com,$2y$10$RzlWMwmUlpWPSF9xY8aVe.BlLquz3J8iVYX3Ec.0PYD2VVPdT.RAe,ridoy
